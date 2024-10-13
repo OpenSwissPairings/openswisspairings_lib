@@ -1,13 +1,21 @@
 use std::error::Error;
 
-trait Line {
+trait Line: Sized {
     fn get_data_identification_number() -> DataIdentificationNumber;
 
-    fn get_fields() -> Vec<Box<impl Field>>;
+    fn get_fields() -> Vec<FieldEnum>;
 }
 
-trait Field: TryFrom<String> + Into<String> {
-    fn get_size() -> Option<u8>; // None means variable size but can only be at the end of a line
+impl Into<String> for Line {
+    fn into(self) -> String {
+        let mut output: String = Line::get_data_identification_number().into();
+
+        return output;
+    }
+}
+
+trait Field: Into<String> + TryFrom<String> {
+    const SIZE: Option<u8> = None;
 }
 
 struct DataIdentificationNumber(u16);
@@ -35,20 +43,52 @@ impl Into<String> for DataIdentificationNumber {
 }
 
 impl Field for DataIdentificationNumber {
-    fn get_size() -> Option<u8> {
-        return Some(3);
+    const SIZE: Option<u8> = Some(3);
+}
+
+struct StartingRankNumber(u16);
+
+impl TryFrom<String> for StartingRankNumber {
+    type Error = Box<dyn Error>;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        let parsed: u16 = value.parse::<u16>()?;
+
+        if parsed >= 1 && parsed <= 9999 {
+            Ok(Self(parsed))
+        } else {
+            Err(Box::from(
+                "Starting rank must be a number between 1 and 9999",
+            ))
+        }
     }
 }
 
-struct PlayerSection {}
+impl Into<String> for StartingRankNumber {
+    fn into(self) -> String {
+        format!("{:0>4}", self.0.to_string())
+    }
+}
+
+impl Field for StartingRankNumber {
+    const SIZE: Option<u8> = Some(4);
+}
+
+struct PlayerSection {
+    starting_rank: StartingRankNumber,
+}
+
+enum FieldEnum {
+    StartingRank(StartingRankNumber),
+}
 
 impl Line for PlayerSection {
     fn get_data_identification_number() -> DataIdentificationNumber {
         return DataIdentificationNumber(3);
     }
 
-    fn get_fields() -> Vec<Box<impl Field>> {
-        let fields: Vec<Box<_>> = Vec::new();
+    fn get_fields() -> Vec<FieldEnum> {
+        let fields: Vec<FieldEnum> = vec![FieldEnum::StartingRank(StartingRankNumber(12))];
 
         return fields;
     }
