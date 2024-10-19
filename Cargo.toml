@@ -2,5 +2,11 @@
 name = "openswisspairings_lib"
 version = "0.1.0"
 edition = "2021"
+description = "A helper library for chess swiss system pairing programs"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/OpenSwissPairings/openswisspairings_lib"
 
 [dependencies]
+icu_calendar = "1.5.2"
+regex = "1.11.0"
+thiserror = "1.0.64"
