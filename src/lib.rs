@@ -32,7 +32,7 @@
     clippy::pedantic,
     clippy::nursery,
     clippy::cargo
-)] // Mising clippy::restriction
+)]
 
 use std::{error::Error, str::Split};
 
