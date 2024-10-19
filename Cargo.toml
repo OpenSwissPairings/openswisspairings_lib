@@ -5,6 +5,8 @@ edition = "2021"
 description = "A helper library for chess swiss system pairing programs"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/OpenSwissPairings/openswisspairings_lib"
+categories = ["data-structures", "parser-implementations"]
+keywords = ["chess"]
 
 [dependencies]
 icu_calendar = "1.5.2"
