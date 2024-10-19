@@ -9,6 +9,4 @@ categories = ["data-structures", "parser-implementations"]
 keywords = ["chess"]
 
 [dependencies]
-icu_calendar = "1.5.2"
-regex = "1.11.0"
 thiserror = "1.0.64"

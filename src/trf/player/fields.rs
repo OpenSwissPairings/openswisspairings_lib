@@ -6,6 +6,8 @@
 //! See also: [`crate::trf::player::round`].
 use crate::trf::TRFError;
 
+use super::utils::parse_int;
+
 /// The player's gender.
 #[derive(Debug)]
 pub enum Sex {
@@ -96,5 +98,74 @@ impl TryFrom<&str> for Name {
                 })
             },
         )
+    }
+}
+
+/// A date.
+///
+/// This is only used in [`crate::trf::player::Section::birth_date`].
+///
+/// This doesn't rely on an external library because:
+/// 1. It would add yet another dependency
+/// 2. The documentation is unclear about this field
+#[derive(Debug)]
+pub struct Date {
+    /// Year.
+    ///
+    /// Format: YYYY (max 4 digits).
+    year: u16,
+
+    /// Month.
+    ///
+    /// Format: MM (max 2 digits).
+    month: u8,
+
+    /// Day.
+    ///
+    /// Format: DD (max 2 digits).
+    day: u8,
+}
+
+impl Date {
+    /// Get [`Date.year`](Date#structfield.year).
+    #[must_use]
+    pub const fn year(&self) -> u16 {
+        self.year
+    }
+
+    /// Get [`Date.month`](Date#structfield.month).
+    #[must_use]
+    pub const fn month(&self) -> u8 {
+        self.month
+    }
+
+    /// Get [`Date.day`](Date#structfield.day).
+    #[must_use]
+    pub const fn day(&self) -> u8 {
+        self.day
+    }
+}
+
+impl TryFrom<&str> for Date {
+    type Error = TRFError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let parts: Vec<&str> = value.split('/').collect();
+
+        if parts.len() != 3 {
+            return Err(TRFError::InvalidDateError(value.to_string()));
+        };
+
+        Ok(Self {
+            year: parse_int(parts[0]).and_then(|option| {
+                option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
+            })?,
+            month: parse_int(parts[1]).and_then(|option| {
+                option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
+            })?,
+            day: parse_int(parts[2]).and_then(|option| {
+                option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
+            })?,
+        })
     }
 }

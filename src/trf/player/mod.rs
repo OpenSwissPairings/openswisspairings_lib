@@ -13,7 +13,7 @@
 //! Currently no getters are available, however we do plan to add them.
 use std::error::Error;
 
-use fields::{Name, Sex, Title};
+use fields::{Date, Name, Sex, Title};
 use round::PlayerRoundSection;
 
 use super::TRFError;
@@ -22,7 +22,7 @@ pub mod fields;
 pub mod round;
 pub(crate) mod utils;
 
-use utils::{parse_date, parse_int, parse_into};
+use utils::{parse_int, parse_into};
 
 /// Player section, stores all information about a player.
 ///
@@ -80,17 +80,7 @@ pub struct Section {
     fide_number: Result<Option<u64>, TRFError>,
 
     /// Player birth date.
-    ///
-    /// TODO: Currently we rely on the [`icu_calendar`] library, however it is a pretty
-    /// big dependency, so we might change later. We also assume the date is using
-    /// [`icu_calendar::Iso`], but this isn't specified in the reference.
-    ///
-    /// TODO: We use [`regex`] to parse the date, however this is also a big dependency
-    /// and we might remove it later since it's slightly overkill. However since it is an
-    /// official Rust library we might keep it.
-    ///
-    /// TODO: Use [`Result<Option>`]
-    birth_date: Option<icu_calendar::Date<icu_calendar::Iso>>,
+    birth_date: Result<Option<Date>, TRFError>,
 
     /// Player total points.
     ///
@@ -154,7 +144,10 @@ impl TryFrom<String> for Section {
             fide_federation: Some(value[49..52].trim().to_string())
                 .filter(|s| !s.is_empty()),
             fide_number: parse_int(&value[53..64]),
-            birth_date: parse_date(&value[65..75]), // [65..75]
+            birth_date: match value[65..75].trim() {
+                "" => Ok(None),
+                other => Date::try_from(other).map(Some),
+            }, // [65..75]
             points: value[76..80].trim().parse::<f32>().ok(),
             rank: value[81..85].trim().parse::<u16>().ok(),
             rounds,

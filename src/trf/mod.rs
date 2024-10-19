@@ -37,6 +37,10 @@ pub enum TRFError {
     #[error("Expected a string of format 'Lastname, Firstname', found string {0}")]
     InvalidPlayerNameError(String),
 
+    /// Error when the birth date is invalid (not in YYYY/MM/DD format).
+    #[error("Expected a valid date, found string {0}")]
+    InvalidDateError(String),
+
     /// Error when the parser can't parse a number.
     #[error("Expected a valid number: {0}")]
     ParseIntError(#[from] ParseIntError),
