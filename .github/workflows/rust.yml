@@ -20,8 +20,11 @@ jobs:
     - name: Store target
       uses: actions/upload-artifact@v4
       with:
-        name: target-check
+        name: target
         path: target
+        retention-days: 1
+        overwrite: true
+        include-hidden-files: true
 
   build:
     needs: check
@@ -39,8 +42,11 @@ jobs:
     - name: Store target
       uses: actions/upload-artifact@v4
       with:
-        name: target-build
+        name: target
         path: target
+        retention-days: 1
+        overwrite: true
+        include-hidden-files: true
 
   test:
     needs: build
