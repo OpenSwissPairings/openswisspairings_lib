@@ -6,7 +6,7 @@
 //! See also: [`crate::trf::player::round`].
 use crate::trf::TRFError;
 
-use super::utils::parse_int;
+use super::utils::parse_number;
 
 /// The player's gender.
 #[derive(Debug)]
@@ -157,13 +157,13 @@ impl TryFrom<&str> for Date {
         };
 
         Ok(Self {
-            year: parse_int(parts[0]).and_then(|option| {
+            year: parse_number(parts[0]).and_then(|option| {
                 option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
             })?,
-            month: parse_int(parts[1]).and_then(|option| {
+            month: parse_number(parts[1]).and_then(|option| {
                 option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
             })?,
-            day: parse_int(parts[2]).and_then(|option| {
+            day: parse_number(parts[2]).and_then(|option| {
                 option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
             })?,
         })

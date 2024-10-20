@@ -9,8 +9,8 @@
 //! See [`crate::trf::player#Usage`].
 use std::str::FromStr;
 
-/// Parse an integer from a TRF file.
-pub fn parse_int<T: FromStr, E: From<<T as FromStr>::Err>>(
+/// Parse a number from a TRF file.
+pub fn parse_number<T: FromStr, E: From<<T as FromStr>::Err>>(
     value: &str,
 ) -> Result<Option<T>, E> {
     match value.trim() {

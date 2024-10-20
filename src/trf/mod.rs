@@ -13,7 +13,7 @@
 //!
 //! Do not use this directly. Instead, use [`crate::Situation`].
 
-use std::num::ParseIntError;
+use std::num::{ParseFloatError, ParseIntError};
 
 use thiserror::Error;
 
@@ -41,7 +41,11 @@ pub enum TRFError {
     #[error("Expected a valid date, found string {0}")]
     InvalidDateError(String),
 
-    /// Error when the parser can't parse a number.
-    #[error("Expected a valid number: {0}")]
+    /// Error when the parser can't parse an integer.
+    #[error("Expected a valid integer: {0}")]
     ParseIntError(#[from] ParseIntError),
+
+    /// Error when the parser can't parse a floating point number.
+    #[error("Expected a valid floating point number: {0}")]
+    ParseFloatError(#[from] ParseFloatError),
 }

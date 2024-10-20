@@ -22,7 +22,7 @@ pub mod fields;
 pub mod round;
 pub(crate) mod utils;
 
-use utils::{parse_int, parse_into};
+use utils::{parse_into, parse_number};
 
 /// Player section, stores all information about a player.
 ///
@@ -89,9 +89,7 @@ pub struct Section {
     /// the same as a win). If, for instance, the 3/1/0 scoring point system is applied in
     /// a tournament and a player scored 5 wins, 2 draws and 2 losses, this field should
     /// contain "17.0".
-    ///
-    /// TODO: Use [`Result<Option>`]
-    points: Option<f32>,
+    points: Result<Option<f32>, TRFError>,
 
     /// Player final ranking.
     ///
@@ -140,15 +138,15 @@ impl TryFrom<String> for Section {
             },
             title: parse_into(&value[6..9]),
             name: parse_into(&value[10..43]),
-            fide_rating: parse_int(&value[44..48]),
+            fide_rating: parse_number(&value[44..48]),
             fide_federation: Some(value[49..52].trim().to_string())
                 .filter(|s| !s.is_empty()),
-            fide_number: parse_int(&value[53..64]),
+            fide_number: parse_number(&value[53..64]),
             birth_date: match value[65..75].trim() {
                 "" => Ok(None),
                 other => Date::try_from(other).map(Some),
             }, // [65..75]
-            points: value[76..80].trim().parse::<f32>().ok(),
+            points: parse_number(&value[76..80]),
             rank: value[81..85].trim().parse::<u16>().ok(),
             rounds,
         })
