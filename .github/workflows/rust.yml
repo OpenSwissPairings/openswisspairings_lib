@@ -10,15 +10,48 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check with Clippy
+      run: cargo clippy --verbose --all-targets --all-features
+    - name: Store target
+      uses: actions/upload-artifact@v4
+      with:
+        name: target
+        path: target
+
   build:
+    needs: check
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+    - name: Download target
+      uses: actions/download-artifact@v4
+      with:
+        name: target
     - name: Build
       run: cargo build --verbose
-    - name: Check with Clippy
-      run: cargo clippy --verbose --all-targets --all-features
-    - name: Run tests
-      run: cargo test --verbose
+    - name: Store target
+      uses: actions/upload-artifact@v4
+      with:
+        name: target
+        path: target
+
+  test:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download target
+      uses: actions/download-artifact@v4
+      with:
+        name: target
+    - name: Test
+      run: cargo test --verbose --bins --examples --tests --benches --all-targets --all-features
