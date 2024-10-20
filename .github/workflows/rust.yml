@@ -54,4 +54,6 @@ jobs:
       with:
         name: target-build
     - name: Test
-      run: cargo test --verbose --bins --examples --tests --benches --all-targets --all-features
+      run: |
+        cargo test --verbose --bins --examples --tests --benches --all-targets --all-features
+        cargo test --verbose --doc --all-features
