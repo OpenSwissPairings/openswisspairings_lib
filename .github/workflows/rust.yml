@@ -20,7 +20,7 @@ jobs:
     - name: Store target
       uses: actions/upload-artifact@v4
       with:
-        name: target
+        name: target-check
         path: target
 
   build:
@@ -33,13 +33,13 @@ jobs:
     - name: Download target
       uses: actions/download-artifact@v4
       with:
-        name: target
+        name: target-check
     - name: Build
       run: cargo build --verbose
     - name: Store target
       uses: actions/upload-artifact@v4
       with:
-        name: target
+        name: target-build
         path: target
 
   test:
@@ -52,6 +52,6 @@ jobs:
     - name: Download target
       uses: actions/download-artifact@v4
       with:
-        name: target
+        name: target-build
     - name: Test
       run: cargo test --verbose --bins --examples --tests --benches --all-targets --all-features
