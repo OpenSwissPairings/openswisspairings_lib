@@ -36,7 +36,7 @@ jobs:
     - name: Download target
       uses: actions/download-artifact@v4
       with:
-        name: target-check
+        name: target
     - name: Build
       run: cargo build --verbose
     - name: Store target
@@ -58,7 +58,7 @@ jobs:
     - name: Download target
       uses: actions/download-artifact@v4
       with:
-        name: target-build
+        name: target
     - name: Test
       run: |
         cargo test --verbose --bins --examples --tests --benches --all-targets --all-features
