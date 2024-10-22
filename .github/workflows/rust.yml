@@ -23,7 +23,7 @@ jobs:
         # Comma-separated list of Rust toolchain specifications. Last version becomes the default. -- see https://rust-lang.github.io/rustup/concepts/toolchains.html#toolchain-specification
         toolchain: nightly
         # Comma-separated list of components to be additionally installed
-        components: cargo-clippy
+        components: clippy
     - name: Check with Clippy
       run: cargo clippy --verbose --all-targets --all-features
     - name: Store target
