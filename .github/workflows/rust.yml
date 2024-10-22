@@ -15,6 +15,13 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+    - name: Setup Rust Toolchain for GitHub CI
+      # You may pin to the exact commit or the version.
+      # uses: actions-rust-lang/setup-rust-toolchain@11df97af8e8102fd60b60a77dfbf58d40cd843b8
+      uses: actions-rust-lang/setup-rust-toolchain@v1.10.1
+      with:
+        # Comma-separated list of Rust toolchain specifications. Last version becomes the default. -- see https://rust-lang.github.io/rustup/concepts/toolchains.html#toolchain-specification
+        toolchain: nightly
     - name: Check with Clippy
       run: cargo clippy --verbose --all-targets --all-features
     - name: Store target
@@ -33,6 +40,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Setup Rust Toolchain for GitHub CI
+      # You may pin to the exact commit or the version.
+      # uses: actions-rust-lang/setup-rust-toolchain@11df97af8e8102fd60b60a77dfbf58d40cd843b8
+      uses: actions-rust-lang/setup-rust-toolchain@v1.10.1
+      with:
+        # Comma-separated list of Rust toolchain specifications. Last version becomes the default. -- see https://rust-lang.github.io/rustup/concepts/toolchains.html#toolchain-specification
+        toolchain: nightly
     - name: Download target
       uses: actions/download-artifact@v4
       with:
@@ -55,6 +69,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Setup Rust Toolchain for GitHub CI
+      # You may pin to the exact commit or the version.
+      # uses: actions-rust-lang/setup-rust-toolchain@11df97af8e8102fd60b60a77dfbf58d40cd843b8
+      uses: actions-rust-lang/setup-rust-toolchain@v1.10.1
+      with:
+        # Comma-separated list of Rust toolchain specifications. Last version becomes the default. -- see https://rust-lang.github.io/rustup/concepts/toolchains.html#toolchain-specification
+        toolchain: nightly
     - name: Download target
       uses: actions/download-artifact@v4
       with:
