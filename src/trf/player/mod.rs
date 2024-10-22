@@ -11,8 +11,6 @@
 //! - [`Ok`]\([`Some`]) contains data
 //!
 //! Currently no getters are available, however we do plan to add them.
-use std::error::Error;
-
 use fields::{Date, Name, Sex, Title};
 use round::PlayerRoundSection;
 
@@ -110,7 +108,7 @@ impl Section {
 }
 
 impl TryFrom<String> for Section {
-    type Error = Box<dyn Error>;
+    type Error = TRFError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         // The first four characters (Data Identification Number and space)

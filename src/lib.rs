@@ -36,9 +36,12 @@
 )]
 #![feature(iter_next_chunk)]
 
-use std::{error::Error, str::Split};
+use std::{
+    error::Error,
+    str::{Chars, Split},
+};
 
-use trf::player::Section;
+use trf::{player::Section, TRFError};
 
 pub mod trf;
 
@@ -79,9 +82,18 @@ impl TryFrom<String> for Situation {
 
         for line in lines {
             if line.len() > 4 {
-                let argument: String = line[4..].to_string();
+                let mut chars: Chars<'_> = line.chars();
+                let din = String::from_iter(
+                    chars
+                        .next_chunk::<3>()
+                        .map_err(|_| TRFError::UnexpectedEndOfString())?,
+                );
+                chars.next(); // Drop space between DIN and rest of data
+                let argument: String = chars.collect::<String>();
 
-                match &line[0..3] {
+                println!(": {din} {argument}");
+
+                match din.as_str() {
                     "001" => {
                         if let Ok(i) = Section::try_from(argument.clone()) {
                             players.push(i);

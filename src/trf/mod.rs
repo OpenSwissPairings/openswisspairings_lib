@@ -63,4 +63,9 @@ pub enum TRFError {
     /// Error when the parser can't parse a floating point number.
     #[error("Expected a valid floating point number: {0}")]
     ParseFloatError(#[from] ParseFloatError),
+
+    /// Error when we somehow ran into the end of a string after checking it was long
+    /// enough
+    #[error("Unexpectedly ran into the end of a string")]
+    UnexpectedEndOfString(),
 }
