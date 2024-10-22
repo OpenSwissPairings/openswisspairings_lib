@@ -96,9 +96,7 @@ pub struct Section {
     /// Exact definition, especially for Team.
     ///
     /// > I don't know what any of this means...
-    ///
-    /// TODO: Use [`Result<Option>`]
-    rank: Option<u16>,
+    rank: Result<Option<u16>, TRFError>,
 
     /// Information about each round played by the player in the tournament.
     ///
@@ -147,7 +145,7 @@ impl TryFrom<String> for Section {
                 other => Date::try_from(other).map(Some),
             }, // [65..75]
             points: parse_number(&value[76..80]),
-            rank: value[81..85].trim().parse::<u16>().ok(),
+            rank: parse_number(&value[81..85]),
             rounds,
         })
     }

@@ -31,8 +31,10 @@
     clippy::all,
     clippy::pedantic,
     clippy::nursery,
-    clippy::cargo
+    clippy::cargo,
+    clippy::indexing_slicing
 )]
+#![feature(iter_next_chunk)]
 
 use std::{error::Error, str::Split};
 
@@ -65,7 +67,13 @@ impl TryFrom<String> for Situation {
     type Error = Box<dyn Error>;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        let lines: Split<'_, char> = value.split('\n'); // TODO: Use FIDE's \r (ew)
+        let split_char: char = if value.contains('\r') {
+            '\r'
+        } else {
+            eprintln!("Using non-FIDE \\n line separator");
+            '\n'
+        };
+        let lines: Split<'_, char> = value.split(split_char);
 
         let mut players: Vec<Section> = vec![];
 

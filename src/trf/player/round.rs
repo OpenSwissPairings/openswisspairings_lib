@@ -10,7 +10,9 @@
 //!
 //! Getter methods are available to retrieve information. Currently no setter methods are
 //! available.
-use std::error::Error;
+use crate::trf::TRFError;
+
+use super::utils::{parse_into, parse_number};
 
 /// Scheduled color or forfeit in round.
 #[derive(Debug, Copy, Clone)]
@@ -26,7 +28,7 @@ pub enum Color {
 }
 
 impl TryFrom<&str> for Color {
-    type Error = Box<dyn Error>;
+    type Error = TRFError;
 
     fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
         Ok(match value {
@@ -34,7 +36,7 @@ impl TryFrom<&str> for Color {
             "b" => Self::Black,
             "-" | " " => Self::None,
 
-            other => return Err(Box::from(format!("Invalid round color: {other}"))),
+            other => return Err(TRFError::InvalidColorError(other.to_string())),
         })
     }
 }
@@ -56,7 +58,7 @@ pub enum Result {
 }
 
 impl TryFrom<&str> for Result {
-    type Error = Box<dyn Error>;
+    type Error = TRFError;
 
     fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
         Ok(match value.to_uppercase().as_str() {
@@ -76,7 +78,7 @@ impl TryFrom<&str> for Result {
             "U" => Self::Bye(ByeRoundResult::PairingAllocatedBye),
             "Z" | " " => Self::Bye(ByeRoundResult::ZeroPointBye),
 
-            other => return Err(Box::from(format!("Invalid round result: {other}"))),
+            other => return Err(TRFError::InvalidRoundResultError(other.to_string())),
         })
     }
 }
@@ -211,55 +213,62 @@ impl From<ByeRoundResult> for String {
 /// A player's single round result.
 ///
 /// > **TODO:** Use Result
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug)]
 pub struct PlayerRoundSection {
     /// Player or forfeit id.
-    id: Option<u16>,
+    id: std::result::Result<Option<u16>, TRFError>,
 
     /// Scheduled color or forfeit.
-    color: Option<Color>,
+    color: std::result::Result<Option<Color>, TRFError>,
 
     /// Result.
-    result: Option<Result>,
+    result: std::result::Result<Option<Result>, TRFError>,
 }
 
 impl PlayerRoundSection {
-    /// Get the player id or forfeit
-    #[must_use]
-    pub const fn id(&self) -> Option<u16> {
-        self.id
+    /// Get the player or forfeit id.
+    ///
+    /// # Errors
+    ///
+    /// This field is [`Err`] if the parsed value isn't a valid number.
+    pub const fn id(&self) -> std::result::Result<&Option<u16>, &TRFError> {
+        self.id.as_ref()
     }
 
-    /// Get the scheduled color or forfeit
-    #[must_use]
-    pub const fn color(&self) -> Option<Color> {
-        self.color
+    /// Get the scheduled color or forfeit.
+    ///
+    /// # Errors
+    ///
+    /// This field is [`Err`] if the parsed value isn't a valid color. See [`Color`].
+    pub const fn color(&self) -> std::result::Result<&Option<Color>, &TRFError> {
+        self.color.as_ref()
     }
 
-    /// Get the round result
-    #[must_use]
-    pub const fn result(&self) -> Option<Result> {
-        self.result
+    /// Get the round result.
+    ///
+    /// # Errors
+    ///
+    /// This field is [`Err`] if the parsed value isn't a valid result. See [`Result`].
+    pub const fn result(&self) -> std::result::Result<&Option<Result>, &TRFError> {
+        self.result.as_ref()
     }
 }
 
 impl TryFrom<&str> for PlayerRoundSection {
-    type Error = Box<dyn Error>;
+    type Error = TRFError;
 
     fn try_from(value: &str) -> std::result::Result<Self, Self::Error> {
         if value.len() < 7 {
-            return Err(Box::from(
-                "At least 7 characters are required to parse a player round section",
-            ));
+            return Err(TRFError::PlayerRoundSectionTooShort(value.to_string()));
         };
 
         Ok(Self {
             id: match value[0..4].trim() {
-                "0000" | "" => None,
-                other => other.parse::<u16>().ok(),
+                "0000" | "" => Ok(None),
+                other => parse_number(other),
             },
-            color: Color::try_from(&value[5..6]).ok(),
-            result: Result::try_from(&value[7..8]).ok(),
+            color: parse_into(&value[5..6]),
+            result: parse_into(&value[7..8]),
         })
     }
 }

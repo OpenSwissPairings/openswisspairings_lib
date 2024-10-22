@@ -24,16 +24,16 @@ pub enum Sex {
 ///
 /// > Note: In most TRF files a different format seems to be used ("m", "g"???).
 #[derive(Debug)]
-#[allow(clippy::upper_case_acronyms, missing_docs)] // F it
+#[allow(missing_docs)] // F it
 pub enum Title {
-    GM,
-    IM,
-    WGM,
-    FM,
-    WIM,
-    CM,
-    WFM,
-    WCM,
+    Grandmaster,
+    InternationalMaster,
+    WomanGrandmaster,
+    FIDEMaster,
+    WomanInternationalMaster,
+    CandidateMaster,
+    WomanFIDEMaster,
+    WomanCandidateMaster,
 }
 
 impl TryFrom<&str> for Title {
@@ -43,14 +43,14 @@ impl TryFrom<&str> for Title {
         // TODO: Parse weird format ('m', 'g')??
 
         Ok(match value {
-            "GM" => Self::GM,
-            "IM" => Self::IM,
-            "WGM" => Self::WGM,
-            "FM" => Self::FM,
-            "WIM" => Self::WIM,
-            "CM" => Self::CM,
-            "WFM" => Self::WFM,
-            "WCM" => Self::WCM,
+            "GM" => Self::Grandmaster,
+            "IM" => Self::InternationalMaster,
+            "WGM" => Self::WomanGrandmaster,
+            "FM" => Self::FIDEMaster,
+            "WIM" => Self::WomanInternationalMaster,
+            "CM" => Self::CandidateMaster,
+            "WFM" => Self::WomanFIDEMaster,
+            "WCM" => Self::WomanCandidateMaster,
             other => return Err(TRFError::InvalidTitleError(other.to_string())),
         })
     }
@@ -157,13 +157,28 @@ impl TryFrom<&str> for Date {
         };
 
         Ok(Self {
-            year: parse_number(parts[0]).and_then(|option| {
+            year: parse_number(
+                parts
+                    .first()
+                    .ok_or_else(|| TRFError::InvalidDateError(value.to_string()))?,
+            )
+            .and_then(|option| {
                 option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
             })?,
-            month: parse_number(parts[1]).and_then(|option| {
+            month: parse_number(
+                parts
+                    .get(1)
+                    .ok_or_else(|| TRFError::InvalidDateError(value.to_string()))?,
+            )
+            .and_then(|option| {
                 option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
             })?,
-            day: parse_number(parts[2]).and_then(|option| {
+            day: parse_number(
+                parts
+                    .get(2)
+                    .ok_or_else(|| TRFError::InvalidDateError(value.to_string()))?,
+            )
+            .and_then(|option| {
                 option.ok_or_else(|| TRFError::InvalidDateError(value.to_string()))
             })?,
         })

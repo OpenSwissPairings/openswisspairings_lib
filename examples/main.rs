@@ -10,7 +10,7 @@ fn main() {
     let contents = fs::read_to_string(FILE_NAME);
 
     match contents {
-        Ok(c) => println!("{:#?}", Situation::try_from(c)),
+        Ok(c) => println!("{:?}", Situation::try_from(c)),
         Err(_) => eprintln!("Failed to open file"),
     }
 }
