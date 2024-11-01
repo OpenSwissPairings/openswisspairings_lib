@@ -9,4 +9,4 @@ categories = ["data-structures", "parser-implementations"]
 keywords = ["chess"]
 
 [dependencies]
-thiserror = "1.0.65"
+thiserror = "1.0.66"
